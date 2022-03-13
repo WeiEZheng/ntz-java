@@ -1,5 +1,8 @@
 package rocks.zipcode;
 
+import java.util.Arrays;
+import java.util.Locale;
+
 /**
  * ntz main command.
  */
@@ -12,7 +15,7 @@ public final class Notez {
     }
     /**
      * Says hello to the world.
-     * 
+     *
      * @param args The arguments of the program.
      */
     public static void main(String argv[]) {
@@ -32,13 +35,12 @@ public final class Notez {
 
         /*
          * You will spend a lot of time right here.
-         * 
+         *
          * instead of loadDemoEntries, you will implement a series
          * of method calls that manipulate the Notez engine.
          * See the first one:
          */
         ntzEngine.loadDemoEntries();
-
         ntzEngine.saveDatabase();
 
         if (argv.length == 0) { // there are no commandline arguments
@@ -46,9 +48,24 @@ public final class Notez {
             ntzEngine.printResults();
         } else {
             if (argv[0].equals("-r")) {
-                ntzEngine.addToCategory("General", argv);
+                ntzEngine.addToCategory("General", Arrays.copyOfRange(argv,1,argv.length));
             } // this should give you an idea about how to TEST the Notez engine
               // without having to spend lots of time messing with command line arguments.
+            else if (argv[0].equals("-f")){
+                if (argv.length==2)
+                    ntzEngine.removeFromCategory("General", Integer.parseInt(argv[1]));
+                else
+                    ntzEngine.removeFromCategory(argv[1], Integer.parseInt(argv[2]));
+            }
+            else if (argv[0].equals("-e")){
+                if (argv.length==3)
+                    ntzEngine.editFromCategory("General", Integer.parseInt(argv[1]),argv[2]);
+                if (argv.length==4)
+                    ntzEngine.editFromCategory(argv[1], Integer.parseInt(argv[2]), argv[3]);
+            }
+            else if (argv[0].equals("-c")){
+                ntzEngine.addToCategory(argv[1], Arrays.copyOfRange(argv,2,argv.length));
+            }
         }
         /*
          * what other method calls do you need here to implement the other commands??
@@ -57,6 +74,9 @@ public final class Notez {
     }
 
     private void addToCategory(String string, String[] argv) {
+        NoteList arg = filemap.get(string);
+        arg.addAll(Arrays.asList(argv));
+        filemap.put(string,arg);
     }
 
     private void saveDatabase() {
@@ -80,5 +100,14 @@ public final class Notez {
     /*
      * Put all your additional methods that implement commands like forget here...
      */
-
+    public void removeFromCategory(String category, Integer noteNumber){
+        NoteList arg = filemap.get(category);
+        arg.remove(noteNumber-1);
+        filemap.put(category,arg);
+    }
+    public void editFromCategory(String category, Integer noteNumber, String replacement){
+        NoteList arg = filemap.get(category);
+        arg.add(noteNumber-1,replacement);
+        filemap.put(category,arg);
+    }
 }
