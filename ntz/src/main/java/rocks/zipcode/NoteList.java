@@ -13,4 +13,7 @@ public class NoteList extends ArrayList<String> {
         super();
         this.add(s);
     }
+
+    public NoteList() {
+    }
 }

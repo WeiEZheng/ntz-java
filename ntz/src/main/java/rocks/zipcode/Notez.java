@@ -1,5 +1,6 @@
 package rocks.zipcode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -73,8 +74,10 @@ public final class Notez {
 
     }
 
-    private void addToCategory(String string, String[] argv) {
+    public void addToCategory(String string, String[] argv) {
         NoteList arg = filemap.get(string);
+        if (arg==null)
+            arg = new NoteList();
         arg.addAll(Arrays.asList(argv));
         filemap.put(string,arg);
     }
@@ -100,12 +103,16 @@ public final class Notez {
     /*
      * Put all your additional methods that implement commands like forget here...
      */
+    public String mapToString(){
+        return filemap.toString();
+    }
     public void removeFromCategory(String category, Integer noteNumber){
         NoteList arg = filemap.get(category);
         arg.remove(noteNumber-1);
         filemap.put(category,arg);
     }
     public void editFromCategory(String category, Integer noteNumber, String replacement){
+        removeFromCategory(category, noteNumber);
         NoteList arg = filemap.get(category);
         arg.add(noteNumber-1,replacement);
         filemap.put(category,arg);
